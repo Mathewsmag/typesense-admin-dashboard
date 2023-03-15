@@ -5,10 +5,10 @@ import { ReactComponent as Cancel } from "./svgs/x-lg.svg";
 interface Props {
   onClick: () => void;
   content: string;
-  color: string;
+  isError?: boolean;
 }
 
-function SuccessOrFailureModal({ onClick, content, color }: Props) {
+function SuccessOrFailureModal({ onClick, content, isError }: Props) {
   useEffect(() => {
     const timeout = setTimeout(() => {
       onClick();
@@ -20,7 +20,9 @@ function SuccessOrFailureModal({ onClick, content, color }: Props) {
   return (
     <div
       className={clsx(
-        `flex items-center gap-3 fixed bottom-5 left-2/4 bg-[${color}] -translate-x-1/2 py-3 px-4 max-w-md font-bold font-lato rounded-md`
+        `flex items-center gap-3 fixed bottom-5 left-2/4 ${
+          isError ? "bg-[#d91b22]" : "bg-[#408857]"
+        } -translate-x-1/2 py-3 px-4 max-w-md font-bold font-lato rounded-md`
       )}
     >
       <p>{content}</p>
@@ -28,5 +30,8 @@ function SuccessOrFailureModal({ onClick, content, color }: Props) {
     </div>
   );
 }
+SuccessOrFailureModal.defaultProps = {
+  isError: false,
+};
 
 export default SuccessOrFailureModal;

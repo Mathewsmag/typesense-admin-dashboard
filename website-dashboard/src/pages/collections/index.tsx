@@ -1,8 +1,16 @@
 import React from "react";
-import { Link, NavLink, Outlet, useParams } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import Button from "../../components/shared/button/button";
 import { ReactComponent as DeleteIcon } from "./svgs/trash.svg";
 import BASEPATH from "../../constants/baseURL";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
+import { deleteCollection } from "../../redux/slices/typesenseSlice/asyncThunks";
 
 interface IndexNav {
   queryString: string;
@@ -11,6 +19,11 @@ interface IndexNav {
 
 function Index() {
   const { collectionName } = useParams();
+  const { apiKey, host, path, port, protocol } = useAppSelector(
+    (state) => state.login
+  );
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const indexNav: IndexNav[] = [
     { navigationName: "Query", queryString: "query" },
     { navigationName: "Schema", queryString: "schema" },
@@ -19,8 +32,22 @@ function Index() {
     { navigationName: "Synonyms", queryString: "synonyms" },
   ];
 
-  const deleteCollection = () => {
-    console.log("delete collection");
+  const dropCollection = async () => {
+    // delete collection then navigate to collections page
+    const typesenseAuthData = {
+      apiKey,
+      host,
+      path,
+      port,
+      protocol,
+    };
+    await dispatch(
+      deleteCollection({
+        typesenseAuthData,
+        collectionName: collectionName || "",
+      })
+    ).unwrap();
+    navigate(`${BASEPATH}/collections`);
   };
 
   return (
@@ -36,7 +63,7 @@ function Index() {
           <span className="dark:text-gray-400">{collectionName}</span>
         </h1>
         <Button
-          onClick={deleteCollection}
+          onClick={dropCollection}
           text="Drop Collection"
           Icon={DeleteIcon}
         />

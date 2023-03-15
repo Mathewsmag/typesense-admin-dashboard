@@ -36,6 +36,8 @@ interface ITypesenseActions {
     curationDescription: string,
     curationSchema: OverrideCreateSchema
   ): Promise<OverrideSchema>;
+
+  deleteCollection(collectionName: string): Promise<CollectionSchema>;
 }
 
 export default class TypesenseActions implements ITypesenseActions {
@@ -53,6 +55,10 @@ export default class TypesenseActions implements ITypesenseActions {
       apiKey: AuthData.apiKey,
       connectionTimeoutSeconds: 2,
     });
+  }
+
+  deleteCollection(collectionName: string): Promise<CollectionSchema> {
+    return this.client.collections(collectionName).delete();
   }
 
   createCuration(
