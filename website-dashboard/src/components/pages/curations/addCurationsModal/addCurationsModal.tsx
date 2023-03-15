@@ -1,5 +1,6 @@
 import Editor from "@monaco-editor/react";
-import { useDispatch } from "react-redux";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import Loading from "../../../shared/loading/loading";
 import ModalBackground from "../../../shared/modalBackground/modalBackground";
 import { ReactComponent as Question } from "./svgs/question.svg";
@@ -7,33 +8,23 @@ import { ReactComponent as Cancel } from "./svgs/cancel.svg";
 import { ReactComponent as Add } from "./svgs/plus.svg";
 import { openCurationsModal } from "../../../../redux/slices/modalSlice/modalSlice";
 import Button from "../../../shared/button/button";
-import { useAppSelector } from "../../../../redux/store/store";
+import { useAppDispatch, useAppSelector } from "../../../../redux/store/store";
+import curationTemplate from "./curationTemplate";
+import { createCuration } from "../../../../redux/slices/typesenseSlice/asyncThunks";
 
 function AddCurationsModal() {
-  const dispatch = useDispatch();
-  const onChange = (value: any, event: any) => {
-    console.log(value);
-  };
-  const schema = {
-    rule: {
-      query: "apple",
-      match: "exact",
-    },
-    includes: [
-      {
-        id: "422",
-        position: 1,
-      },
-      {
-        id: "54",
-        position: 2,
-      },
-    ],
-    excludes: [
-      {
-        id: "287",
-      },
-    ],
+  const dispatch = useAppDispatch();
+  const { collectionName } = useParams();
+  const { apiKey, host, path, port, protocol } = useAppSelector(
+    (state) => state.login
+  );
+  const [curationSchema, setCuration] = useState(curationTemplate);
+  const [curationDescription, setCurationDescription] = useState("");
+  const [collectionDescriptionRequired, setCollectionDescriptionRequired] =
+    useState(false);
+
+  const onChange = (value: any) => {
+    setCuration(value);
   };
 
   const closeModal = () => {
@@ -42,7 +33,22 @@ function AddCurationsModal() {
 
   const { theme } = useAppSelector((state) => state.theme);
 
-  const addCuration = () => {};
+  const addCuration = async () => {
+    if (!curationDescription) {
+      setCollectionDescriptionRequired(true);
+      return;
+    }
+
+    const typesenseAuthData = { apiKey, host, path, port, protocol };
+    const curationData = {
+      typesenseAuthData,
+      curationSchema,
+      curationDescription,
+      collectionName: collectionName || "",
+    };
+    await dispatch(createCuration(curationData)).unwrap();
+    dispatch(openCurationsModal());
+  };
 
   return (
     <ModalBackground>
@@ -69,15 +75,30 @@ function AddCurationsModal() {
           Using overrides, you can include or exclude specific documents for a
           given query.
         </p>
+        {collectionDescriptionRequired ? (
+          <p className="font-lato text-red-600 mb-1">Required</p>
+        ) : null}{" "}
         <input
           type="text"
-          className="outline-none rounded-md border-2 p-1 w-full mb-2 font-lato text-gray-500 dark:bg-[#010409] dark:border-gray-600"
+          className={`outline-none rounded-md ${
+            collectionDescriptionRequired
+              ? "border-2 border-red-600"
+              : "border-2"
+          } p-1 w-full mb-2 font-lato text-gray-500 dark:bg-[#010409] ${
+            collectionDescriptionRequired
+              ? "dark:border-red-600"
+              : "dark:border-gray-600"
+          }`}
           placeholder="Give the curation a name (required)"
+          onChange={(e) => {
+            setCollectionDescriptionRequired(false);
+            setCurationDescription(e.target.value);
+          }}
         />
         <Editor
           height="310px"
           defaultLanguage="json"
-          defaultValue={JSON.stringify(schema, null, 2)}
+          defaultValue={JSON.stringify(curationSchema, null, 2)}
           onChange={onChange}
           loading={<Loading />}
           theme={theme === "dark" ? "vs-dark" : "light"} // light, vs-dark, hc-black

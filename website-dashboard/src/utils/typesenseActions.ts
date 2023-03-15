@@ -4,7 +4,11 @@ import { HealthResponse } from "typesense/lib/Typesense/Health";
 import { KeyCreateSchema, KeySchema } from "typesense/lib/Typesense/Key";
 import { KeysRetrieveSchema } from "typesense/lib/Typesense/Keys";
 import { MetricsResponse } from "typesense/lib/Typesense/Metrics";
-import { OverridesRetrieveSchema } from "typesense/lib/Typesense/Overrides";
+import { OverrideSchema } from "typesense/lib/Typesense/Override";
+import {
+  OverrideCreateSchema,
+  OverridesRetrieveSchema,
+} from "typesense/lib/Typesense/Overrides";
 
 export interface ITypesenseAuthData {
   apiKey: string;
@@ -26,6 +30,12 @@ interface ITypesenseActions {
   createAPIKey(keySchema: KeyCreateSchema): Promise<KeySchema>;
 
   getHealth(): Promise<HealthResponse>;
+
+  createCuration(
+    collectionName: string,
+    curationDescription: string,
+    curationSchema: OverrideCreateSchema
+  ): Promise<OverrideSchema>;
 }
 
 export default class TypesenseActions implements ITypesenseActions {
@@ -43,6 +53,17 @@ export default class TypesenseActions implements ITypesenseActions {
       apiKey: AuthData.apiKey,
       connectionTimeoutSeconds: 2,
     });
+  }
+
+  createCuration(
+    collectionName: string,
+    curationDescription: string,
+    curationSchema: OverrideCreateSchema
+  ): Promise<OverrideSchema> {
+    return this.client
+      .collections(collectionName)
+      .overrides()
+      .upsert(curationDescription, curationSchema);
   }
 
   async getHealth(): Promise<HealthResponse> {

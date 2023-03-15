@@ -10,6 +10,8 @@ interface IInitialState {
   searchKeysReturned: boolean;
   searchAPIKeys: KeySchema;
   healthy: boolean;
+  curationCreated: boolean;
+  curationCreationError: boolean;
 }
 
 const initialState: IInitialState = {
@@ -18,6 +20,8 @@ const initialState: IInitialState = {
   searchAPIKeys: {} as KeySchema,
   searchKeysReturned: false,
   healthy: false,
+  curationCreated: true,
+  curationCreationError: false,
 };
 
 const typesenseSlice = createSlice({
@@ -36,6 +40,10 @@ const typesenseSlice = createSlice({
         default:
           break;
       }
+    },
+    restoreCurationCreatedOrError(state) {
+      state.curationCreated = false;
+      state.curationCreationError = false;
     },
   },
   extraReducers: (builder) => {
@@ -56,8 +64,15 @@ const typesenseSlice = createSlice({
     builder.addCase(Thunks.confirmHealth.rejected, (state) => {
       state.healthy = false;
     });
+    builder.addCase(Thunks.createCuration.fulfilled, (state) => {
+      state.curationCreated = true;
+    });
+    builder.addCase(Thunks.createCuration.rejected, (state) => {
+      state.curationCreationError = true;
+    });
   },
 });
 
 export default typesenseSlice.reducer;
-export const { closeAPIKeyModal } = typesenseSlice.actions;
+export const { closeAPIKeyModal, restoreCurationCreatedOrError } =
+  typesenseSlice.actions;

@@ -12,8 +12,12 @@ import AddSynonymModal from "../../components/pages/synonyms/addSynonymsModal/ad
 import AdminAPIKeyModal from "../../components/pages/apiKeys/adminAPIKeyModal/adminAPIKeyModal";
 import AddAliasesModal from "../../components/pages/aliases/addAliasesModal/addAliasesModal";
 import ApiKeyDisplayModal from "../../components/shared/APIKeyDisplayModal/apiKeyDisplayModal";
-import { closeAPIKeyModal } from "../../redux/slices/typesenseSlice/typesenseSlice";
+import {
+  closeAPIKeyModal,
+  restoreCurationCreatedOrError,
+} from "../../redux/slices/typesenseSlice/typesenseSlice";
 import { changeTheme } from "../../redux/slices/theme/themeSlice";
+import SuccessOrFailureModal from "../../components/shared/successOrFailureModal/successOrFailureModal";
 
 function Home() {
   const dispatch = useDispatch();
@@ -25,8 +29,14 @@ function Home() {
     openAliasesModal,
   } = useAppSelector((state) => state.modal);
 
-  const { adminApiKeys, keysReturned, searchKeysReturned, searchAPIKeys } =
-    useAppSelector((state) => state.typesense);
+  const {
+    adminApiKeys,
+    keysReturned,
+    searchKeysReturned,
+    searchAPIKeys,
+    curationCreated,
+    curationCreationError,
+  } = useAppSelector((state) => state.typesense);
 
   const closeKeyModal = (adminOrSearch: "admin" | "search") => {
     dispatch(closeAPIKeyModal({ value: adminOrSearch }));
@@ -64,6 +74,24 @@ function Home() {
       {openSynonymModal && <AddSynonymModal />}
       {openAdminAPIKeyModal && <AdminAPIKeyModal />}
       {openAliasesModal && <AddAliasesModal />}
+      {curationCreated && (
+        <SuccessOrFailureModal
+          content="Curation created successfully"
+          color="#408857"
+          onClick={() => {
+            dispatch(restoreCurationCreatedOrError());
+          }}
+        />
+      )}
+      {curationCreationError && (
+        <SuccessOrFailureModal
+          content="There was an error creating the curation"
+          color="#d91b22"
+          onClick={() => {
+            dispatch(restoreCurationCreatedOrError());
+          }}
+        />
+      )}
       <aside
         className={clsx(
           classes.Aside,
