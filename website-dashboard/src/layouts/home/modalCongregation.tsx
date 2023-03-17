@@ -7,10 +7,10 @@ import SuccessOrFailureModal from "../../components/shared/successOrFailureModal
 import {
   closeAPIKeyModal,
   restoreAliasCreatedOrError,
-  restoreCollectionDeletedOrError,
   restoreCurationCreatedOrError,
 } from "../../redux/slices/typesenseSlice/typesenseSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
+import DeletionModalCongregation from "./deletionModalCongregation";
 
 function ModalCongregation() {
   const dispatch = useAppDispatch();
@@ -22,8 +22,6 @@ function ModalCongregation() {
     searchAPIKeys,
     curationCreated,
     curationCreationError,
-    collectionDeletedSuccessfully,
-    collectionDeleteError,
     aliasCreatedSuccessfully,
     aliasCreationError,
   } = useAppSelector((state) => state.typesense);
@@ -74,23 +72,7 @@ function ModalCongregation() {
           }}
         />
       )}
-      {collectionDeletedSuccessfully && (
-        <SuccessOrFailureModal
-          content="The collection was deleted successfully"
-          onClick={() => {
-            dispatch(restoreCollectionDeletedOrError());
-          }}
-        />
-      )}
-      {collectionDeleteError && (
-        <SuccessOrFailureModal
-          content="There was an error deleting the collection"
-          isError
-          onClick={() => {
-            dispatch(restoreCollectionDeletedOrError());
-          }}
-        />
-      )}
+
       {aliasCreatedSuccessfully && (
         <SuccessOrFailureModal
           content="There alias was created successfully"
@@ -108,6 +90,7 @@ function ModalCongregation() {
           }}
         />
       )}
+      <DeletionModalCongregation />
     </>
   );
 }

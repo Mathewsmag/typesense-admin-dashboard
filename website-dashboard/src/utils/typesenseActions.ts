@@ -5,7 +5,11 @@ import {
 } from "typesense/lib/Typesense/Aliases";
 import { CollectionSchema } from "typesense/lib/Typesense/Collection";
 import { HealthResponse } from "typesense/lib/Typesense/Health";
-import { KeyCreateSchema, KeySchema } from "typesense/lib/Typesense/Key";
+import {
+  KeyCreateSchema,
+  KeyDeleteSchema,
+  KeySchema,
+} from "typesense/lib/Typesense/Key";
 import { KeysRetrieveSchema } from "typesense/lib/Typesense/Keys";
 import { OverrideSchema } from "typesense/lib/Typesense/Override";
 import {
@@ -37,6 +41,10 @@ export default class TypesenseActions implements ITypesenseActions {
       apiKey: AuthData.apiKey,
       connectionTimeoutSeconds: 2,
     });
+  }
+
+  deleteAPIKey(keyId: number): Promise<KeyDeleteSchema> {
+    return this.client.keys(keyId).delete();
   }
 
   createAlias(

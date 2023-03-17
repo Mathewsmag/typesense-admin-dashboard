@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Link,
   NavLink,
@@ -10,7 +9,7 @@ import Button from "../../components/shared/button/button";
 import { ReactComponent as DeleteIcon } from "./svgs/trash.svg";
 import BASEPATH from "../../constants/baseURL";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import { deleteCollection } from "../../redux/slices/typesenseSlice/asyncThunks";
+import { deleteCollection } from "../../redux/slices/deletions/deletionAsyncThunks";
 
 interface IndexNav {
   queryString: string;

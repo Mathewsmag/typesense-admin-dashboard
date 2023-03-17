@@ -12,8 +12,6 @@ interface IInitialState {
   healthy: boolean;
   curationCreated: boolean;
   curationCreationError: boolean;
-  collectionDeletedSuccessfully: boolean;
-  collectionDeleteError: boolean;
   aliasCreatedSuccessfully: boolean;
   aliasCreationError: boolean;
 }
@@ -27,9 +25,6 @@ const initialState: IInitialState = {
 
   curationCreated: false,
   curationCreationError: false,
-
-  collectionDeletedSuccessfully: false,
-  collectionDeleteError: false,
 
   aliasCreatedSuccessfully: false,
   aliasCreationError: false,
@@ -55,10 +50,6 @@ const typesenseSlice = createSlice({
     restoreCurationCreatedOrError(state) {
       state.curationCreated = false;
       state.curationCreationError = false;
-    },
-    restoreCollectionDeletedOrError(state) {
-      state.collectionDeletedSuccessfully = false;
-      state.collectionDeleteError = false;
     },
     restoreAliasCreatedOrError(state) {
       state.aliasCreatedSuccessfully = false;
@@ -89,12 +80,6 @@ const typesenseSlice = createSlice({
     builder.addCase(Thunks.createCuration.rejected, (state) => {
       state.curationCreationError = true;
     });
-    builder.addCase(Thunks.deleteCollection.fulfilled, (state) => {
-      state.collectionDeletedSuccessfully = true;
-    });
-    builder.addCase(Thunks.deleteCollection.rejected, (state) => {
-      state.collectionDeleteError = true;
-    });
     builder.addCase(Thunks.createAlias.fulfilled, (state) => {
       state.aliasCreatedSuccessfully = true;
     });
@@ -108,6 +93,5 @@ export default typesenseSlice.reducer;
 export const {
   closeAPIKeyModal,
   restoreCurationCreatedOrError,
-  restoreCollectionDeletedOrError,
   restoreAliasCreatedOrError,
 } = typesenseSlice.actions;
