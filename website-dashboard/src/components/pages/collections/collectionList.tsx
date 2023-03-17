@@ -1,9 +1,11 @@
 /* eslint-disable no-nested-ternary */
 import ListLayout from "../../../layouts/listLayout/listLayout";
+import ErrorScreen from "../../shared/error/errorScreen";
 import NoRecords from "../../shared/noRecords/noRecords";
 import CollectionListTiles from "./collectionListTile";
 import CollectionListTitle from "./collectionListTitle";
 import useFetchCollections from "./hooks/useCollections";
+import ListLoader from "../../shared/listLoader/listLoader";
 
 function CollectionList() {
   const { collections, error, loading } = useFetchCollections();
@@ -24,7 +26,7 @@ function CollectionList() {
     <ListLayout>
       <CollectionListTitle />
       {error ? (
-        <p>Error..</p>
+        <ErrorScreen />
       ) : !loading ? (
         collections.length > 0 ? (
           collectionsList
@@ -32,7 +34,7 @@ function CollectionList() {
           <NoRecords />
         )
       ) : (
-        <p>Loading</p>
+        <ListLoader />
       )}
     </ListLayout>
   );

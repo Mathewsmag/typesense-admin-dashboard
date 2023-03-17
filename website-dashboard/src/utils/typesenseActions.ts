@@ -1,14 +1,18 @@
 import Typesense, { Client } from "typesense";
+import {
+  CollectionAliasesResponseSchema,
+  CollectionAliasSchema,
+} from "typesense/lib/Typesense/Aliases";
 import { CollectionSchema } from "typesense/lib/Typesense/Collection";
 import { HealthResponse } from "typesense/lib/Typesense/Health";
 import { KeyCreateSchema, KeySchema } from "typesense/lib/Typesense/Key";
 import { KeysRetrieveSchema } from "typesense/lib/Typesense/Keys";
-import { MetricsResponse } from "typesense/lib/Typesense/Metrics";
 import { OverrideSchema } from "typesense/lib/Typesense/Override";
 import {
   OverrideCreateSchema,
   OverridesRetrieveSchema,
 } from "typesense/lib/Typesense/Overrides";
+import ITypesenseActions from "./typesenseActionsInterface";
 
 export interface ITypesenseAuthData {
   apiKey: string;
@@ -16,28 +20,6 @@ export interface ITypesenseAuthData {
   port: number;
   host: string;
   path: string;
-}
-
-interface ITypesenseActions {
-  getCollectionSchema(collectionName: string): Promise<CollectionSchema>;
-
-  getCollections(): Promise<CollectionSchema[]>;
-
-  getCurations(collectionName: string): Promise<OverridesRetrieveSchema>;
-
-  getAPIKeys(): Promise<KeysRetrieveSchema>;
-
-  createAPIKey(keySchema: KeyCreateSchema): Promise<KeySchema>;
-
-  getHealth(): Promise<HealthResponse>;
-
-  createCuration(
-    collectionName: string,
-    curationDescription: string,
-    curationSchema: OverrideCreateSchema
-  ): Promise<OverrideSchema>;
-
-  deleteCollection(collectionName: string): Promise<CollectionSchema>;
 }
 
 export default class TypesenseActions implements ITypesenseActions {
@@ -55,6 +37,20 @@ export default class TypesenseActions implements ITypesenseActions {
       apiKey: AuthData.apiKey,
       connectionTimeoutSeconds: 2,
     });
+  }
+
+  createAlias(
+    aliasName: string,
+    collectionName: string
+  ): Promise<CollectionAliasSchema> {
+    const aliasedCollection = {
+      collection_name: collectionName,
+    };
+    return this.client.aliases().upsert(aliasName, aliasedCollection);
+  }
+
+  getAliases(): Promise<CollectionAliasesResponseSchema> {
+    return this.client.aliases().retrieve();
   }
 
   deleteCollection(collectionName: string): Promise<CollectionSchema> {
@@ -88,7 +84,6 @@ export default class TypesenseActions implements ITypesenseActions {
 
       return healthResponse;
     } catch (error) {
-      console.log(error);
       throw new Error();
     }
   }

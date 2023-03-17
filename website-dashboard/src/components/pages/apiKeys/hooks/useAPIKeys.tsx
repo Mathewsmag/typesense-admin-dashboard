@@ -29,7 +29,7 @@ interface KeyShemaRefresh extends KeySchema {
 
 const useAPIKeys = () => {
   const [apiKeys, setApiKeys] = useState<KeyShemaRefresh[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { apiKey, host, path, port, protocol } = useAppSelector(
     (state) => state.login

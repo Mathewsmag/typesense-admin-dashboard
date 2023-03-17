@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { OverrideRuleQuerySchema } from "typesense/lib/Typesense/Overrides";
@@ -8,6 +9,9 @@ import CurationsListTitle from "../../../components/pages/curations/curationsLis
 import ListLayout from "../../../layouts/listLayout/listLayout";
 import { ReactComponent as AddIcon } from "./svgs/add.svg";
 import useFetchCurations from "./hooks/useFetchCurations";
+import NoRecords from "../../../components/shared/noRecords/noRecords";
+import ErrorScreen from "../../../components/shared/error/errorScreen";
+import ListLoader from "../../../components/shared/listLoader/listLoader";
 
 function Curations() {
   const dispatch = useDispatch();
@@ -37,6 +41,24 @@ function Curations() {
     }
   };
 
+  const curationList = curations.map((override) => {
+    return (
+      <CurationsListTile
+        key={override.id}
+        curationQuery={getQuery(
+          override.rule as OverrideRuleQuerySchema,
+          "query"
+        )}
+        curationMatchType={getQuery(
+          override.rule as OverrideRuleQuerySchema,
+          "match"
+        )}
+        curationIncudes={override.includes?.length || 0}
+        curationExcludes={override.excludes?.length || 0}
+      />
+    );
+  });
+
   return (
     <>
       <div className="">
@@ -48,24 +70,17 @@ function Curations() {
       </div>
       <ListLayout>
         <CurationsListTitle />
-        {curations.map((override) => {
-          return (
-            <CurationsListTile
-              key={override.id}
-              curationQuery={getQuery(
-                override.rule as OverrideRuleQuerySchema,
-                "query"
-              )}
-              // curationMatchType={override.rule.match}
-              curationMatchType={getQuery(
-                override.rule as OverrideRuleQuerySchema,
-                "match"
-              )}
-              curationIncudes={override.includes?.length || 0}
-              curationExcludes={override.excludes?.length || 0}
-            />
-          );
-        })}
+        {error ? (
+          <ErrorScreen />
+        ) : !loading ? (
+          curations.length > 0 ? (
+            curationList
+          ) : (
+            <NoRecords />
+          )
+        ) : (
+          <ListLoader />
+        )}
       </ListLayout>
     </>
   );

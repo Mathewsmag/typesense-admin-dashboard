@@ -6,6 +6,7 @@ import ApiKeyDisplayModal from "../../components/shared/APIKeyDisplayModal/apiKe
 import SuccessOrFailureModal from "../../components/shared/successOrFailureModal/successOrFailureModal";
 import {
   closeAPIKeyModal,
+  restoreAliasCreatedOrError,
   restoreCollectionDeletedOrError,
   restoreCurationCreatedOrError,
 } from "../../redux/slices/typesenseSlice/typesenseSlice";
@@ -23,6 +24,8 @@ function ModalCongregation() {
     curationCreationError,
     collectionDeletedSuccessfully,
     collectionDeleteError,
+    aliasCreatedSuccessfully,
+    aliasCreationError,
   } = useAppSelector((state) => state.typesense);
 
   const {
@@ -85,6 +88,23 @@ function ModalCongregation() {
           isError
           onClick={() => {
             dispatch(restoreCollectionDeletedOrError());
+          }}
+        />
+      )}
+      {aliasCreatedSuccessfully && (
+        <SuccessOrFailureModal
+          content="There alias was created successfully"
+          onClick={() => {
+            dispatch(restoreAliasCreatedOrError());
+          }}
+        />
+      )}
+      {aliasCreationError && (
+        <SuccessOrFailureModal
+          content="There was an error creating the alias"
+          isError
+          onClick={() => {
+            dispatch(restoreAliasCreatedOrError());
           }}
         />
       )}

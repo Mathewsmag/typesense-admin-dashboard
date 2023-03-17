@@ -89,3 +89,23 @@ export const deleteCollection = createAsyncThunk(
     }
   }
 );
+interface ICreateAlias {
+  typesenseAuthData: ITypesenseAuthData;
+  aliasName: string;
+  collectionName: string;
+}
+export const createAlias = createAsyncThunk(
+  "typesense/createAlias",
+  async (alias: ICreateAlias) => {
+    const typesenseAPI = new TypesenseActions(alias.typesenseAuthData); // Handle this more gracefully
+    try {
+      const response = await typesenseAPI.createAlias(
+        alias.aliasName,
+        alias.collectionName
+      );
+      return response;
+    } catch (error) {
+      throw new Error("Could not create the alias");
+    }
+  }
+);

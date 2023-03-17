@@ -25,8 +25,11 @@ function SuccessOrFailureModal({ onClick, content, isError }: Props) {
         } -translate-x-1/2 py-3 px-4 max-w-md font-bold font-lato rounded-md`
       )}
     >
-      <p>{content}</p>
-      <Cancel onClick={onClick} className="cursor-pointer" />
+      <p className="dark:text-black text-gray-200">{content}</p>
+      <Cancel
+        onClick={onClick}
+        className="cursor-pointer dark:text-black text-gray-200"
+      />
     </div>
   );
 }

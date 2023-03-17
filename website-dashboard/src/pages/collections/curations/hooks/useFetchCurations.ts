@@ -22,7 +22,7 @@ const fetchCurations = async (
 
 const useFetchCurations = (collectionName: string) => {
   const [curations, setCurations] = useState<OverrideSchema[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
   const { apiKey, host, path, port, protocol } = useAppSelector(
     (state) => state.login

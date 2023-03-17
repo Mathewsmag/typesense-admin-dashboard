@@ -5,6 +5,9 @@ import TypesenseActions, {
   ITypesenseAuthData,
 } from "../../../../utils/typesenseActions";
 
+// eslint-disable-next-line no-promise-executor-return
+// const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const fetchCollections = async ({
   apiKey,
   host,
@@ -19,12 +22,13 @@ const fetchCollections = async ({
     port,
     protocol,
   });
+  // await wait(5000);
   const curations = await typesense.getCollections();
   return curations;
 };
 
 const useFetchCollections = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [collections, setCollections] = useState<CollectionSchema[]>([]);
   const { apiKey, host, path, port, protocol } = useAppSelector(

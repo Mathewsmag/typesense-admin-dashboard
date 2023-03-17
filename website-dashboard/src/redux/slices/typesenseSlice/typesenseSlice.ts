@@ -14,6 +14,8 @@ interface IInitialState {
   curationCreationError: boolean;
   collectionDeletedSuccessfully: boolean;
   collectionDeleteError: boolean;
+  aliasCreatedSuccessfully: boolean;
+  aliasCreationError: boolean;
 }
 
 const initialState: IInitialState = {
@@ -28,6 +30,9 @@ const initialState: IInitialState = {
 
   collectionDeletedSuccessfully: false,
   collectionDeleteError: false,
+
+  aliasCreatedSuccessfully: false,
+  aliasCreationError: false,
 };
 
 const typesenseSlice = createSlice({
@@ -54,6 +59,10 @@ const typesenseSlice = createSlice({
     restoreCollectionDeletedOrError(state) {
       state.collectionDeletedSuccessfully = false;
       state.collectionDeleteError = false;
+    },
+    restoreAliasCreatedOrError(state) {
+      state.aliasCreatedSuccessfully = false;
+      state.aliasCreationError = false;
     },
   },
   extraReducers: (builder) => {
@@ -86,6 +95,12 @@ const typesenseSlice = createSlice({
     builder.addCase(Thunks.deleteCollection.rejected, (state) => {
       state.collectionDeleteError = true;
     });
+    builder.addCase(Thunks.createAlias.fulfilled, (state) => {
+      state.aliasCreatedSuccessfully = true;
+    });
+    builder.addCase(Thunks.createAlias.rejected, (state) => {
+      state.aliasCreationError = true;
+    });
   },
 });
 
@@ -94,4 +109,5 @@ export const {
   closeAPIKeyModal,
   restoreCurationCreatedOrError,
   restoreCollectionDeletedOrError,
+  restoreAliasCreatedOrError,
 } = typesenseSlice.actions;
