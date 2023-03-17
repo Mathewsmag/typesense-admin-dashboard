@@ -114,8 +114,9 @@ function SearchAPIKeysDataCollection() {
             collectionEmpty ? "border-2 border-red-600" : "border-2"
           } p-1 w-44 font-lato text-gray-500 dark:bg-[#010409] dark:border-gray-600`}
           onChange={handleCollection}
+          defaultValue="default"
         >
-          <option disabled selected>
+          <option value="default" disabled>
             {" "}
             - select an option -{" "}
           </option>

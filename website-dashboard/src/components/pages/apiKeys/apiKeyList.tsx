@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import ListLayout from "../../../layouts/listLayout/listLayout";
+import { useAppSelector } from "../../../redux/store/store";
 import ErrorScreen from "../../shared/error/errorScreen";
 import ListLoader from "../../shared/listLoader/listLoader";
 import NoRecords from "../../shared/noRecords/noRecords";
@@ -9,7 +10,8 @@ import ApiKeyListTitle from "./apiKeyListTitle";
 import useAPIKeys from "./hooks/useAPIKeys";
 
 function ApiKeyList() {
-  const { apiKeys, error, loading } = useAPIKeys();
+  const { error, loading } = useAPIKeys();
+  const { apiKeys } = useAppSelector((state) => state.tempFetchedDataStore);
   const apiKeysList = apiKeys.map((apiKey) => {
     return (
       <ApiKeyListTile

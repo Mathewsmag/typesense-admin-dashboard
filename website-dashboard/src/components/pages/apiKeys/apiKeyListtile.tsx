@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import date from "date-and-time";
 import { deleteAPIKey } from "../../../redux/slices/deletions/deletionAsyncThunks";
+import { deleteAFetchedAPIKey } from "../../../redux/slices/tempStoreFetchedData/storeFetchedDataSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/store/store";
 import { ReactComponent as Deleteicon } from "./svgs/trash.svg";
 
@@ -21,8 +22,6 @@ function ApiKeyListTile({
   const { apiKey, host, path, port, protocol } = useAppSelector(
     (state) => state.login
   );
-  const className = clsx("font-lato text-sm ");
-  const classNameFlex = clsx("flex items-center justify-center");
 
   const formatDate = (unformatedDate: number) => {
     const formatedDate = new Date(unformatedDate * 1000);
@@ -30,19 +29,16 @@ function ApiKeyListTile({
   };
 
   const deleteApikey = async (keyId: number) => {
-    const typesenseAuthData = {
-      apiKey,
-      host,
-      path,
-      port,
-      protocol,
-    };
     const payload = {
-      typesenseAuthData,
+      typesenseAuthData: { apiKey, host, path, port, protocol },
       keyId,
     };
     await dispatch(deleteAPIKey(payload)).unwrap();
+    dispatch(deleteAFetchedAPIKey({ keyId }));
   };
+
+  const className = clsx("font-lato text-sm ");
+  const classNameFlex = clsx("flex items-center justify-center");
 
   return (
     <div className="grid grid-cols-5 gap-4 px-3 border-b-2 py-2 dark:text-gray-300 dark:border-gray-600">

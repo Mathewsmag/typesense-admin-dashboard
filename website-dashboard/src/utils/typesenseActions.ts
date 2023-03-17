@@ -1,3 +1,5 @@
+/* eslint-disable no-constructor-return */
+/* eslint-disable @typescript-eslint/no-this-alias */
 import Typesense, { Client } from "typesense";
 import {
   CollectionAliasesResponseSchema,
@@ -11,7 +13,10 @@ import {
   KeySchema,
 } from "typesense/lib/Typesense/Key";
 import { KeysRetrieveSchema } from "typesense/lib/Typesense/Keys";
-import { OverrideSchema } from "typesense/lib/Typesense/Override";
+import {
+  OverrideDeleteSchema,
+  OverrideSchema,
+} from "typesense/lib/Typesense/Override";
 import {
   OverrideCreateSchema,
   OverridesRetrieveSchema,
@@ -26,10 +31,16 @@ export interface ITypesenseAuthData {
   path: string;
 }
 
+let instance: TypesenseActions | null = null;
 export default class TypesenseActions implements ITypesenseActions {
-  private client: Client;
+  private client: Client | undefined;
 
   constructor(public AuthData: ITypesenseAuthData) {
+    if (instance) {
+      return instance;
+    }
+    instance = this;
+
     this.client = new Typesense.Client({
       nodes: [
         {
@@ -43,7 +54,24 @@ export default class TypesenseActions implements ITypesenseActions {
     });
   }
 
+  deleteCuration(
+    collectionName: string,
+    curationName: string
+  ): Promise<OverrideDeleteSchema> {
+    if (!this.client) throw new Error("Client not initialized");
+    return this.client
+      .collections(collectionName)
+      .overrides(curationName)
+      .delete();
+  }
+
+  deleteAlias(aliasName: string): Promise<CollectionAliasSchema> {
+    if (!this.client) throw new Error("Client not initialized");
+    return this.client.aliases(aliasName).delete();
+  }
+
   deleteAPIKey(keyId: number): Promise<KeyDeleteSchema> {
+    if (!this.client) throw new Error("Client not initialized");
     return this.client.keys(keyId).delete();
   }
 
@@ -54,14 +82,17 @@ export default class TypesenseActions implements ITypesenseActions {
     const aliasedCollection = {
       collection_name: collectionName,
     };
+    if (!this.client) throw new Error("Client not initialized");
     return this.client.aliases().upsert(aliasName, aliasedCollection);
   }
 
   getAliases(): Promise<CollectionAliasesResponseSchema> {
+    if (!this.client) throw new Error("Client not initialized");
     return this.client.aliases().retrieve();
   }
 
   deleteCollection(collectionName: string): Promise<CollectionSchema> {
+    if (!this.client) throw new Error("Client not initialized");
     return this.client.collections(collectionName).delete();
   }
 
@@ -70,6 +101,7 @@ export default class TypesenseActions implements ITypesenseActions {
     curationDescription: string,
     curationSchema: OverrideCreateSchema
   ): Promise<OverrideSchema> {
+    if (!this.client) throw new Error("Client not initialized");
     return this.client
       .collections(collectionName)
       .overrides()
@@ -77,19 +109,10 @@ export default class TypesenseActions implements ITypesenseActions {
   }
 
   async getHealth(): Promise<HealthResponse> {
-    // const url = `${this.AuthData.protocol}://${this.AuthData.host}:${this.AuthData.port}${this.AuthData.path}/metrics.json`;
+    if (!this.client) throw new Error("Client not initialized");
     try {
       const healthResponse = await this.client.health.retrieve();
       await this.client.metrics.retrieve();
-      // const options = {
-      //   method: "GET",
-      //   headers: {
-      //     "X-TYPESENSE-API-KEY": this.AuthData.apiKey,
-      //   },
-      // };
-      // const res = await fetch(url, options);
-      // const newres = res.json();
-
       return healthResponse;
     } catch (error) {
       throw new Error();
@@ -97,22 +120,27 @@ export default class TypesenseActions implements ITypesenseActions {
   }
 
   createAPIKey(keySchema: KeyCreateSchema): Promise<KeySchema> {
+    if (!this.client) throw new Error("Client not initialized");
     return this.client.keys().create(keySchema);
   }
 
   getAPIKeys(): Promise<KeysRetrieveSchema> {
+    if (!this.client) throw new Error("Client not initialized");
     return this.client.keys().retrieve();
   }
 
   getCollections(): Promise<CollectionSchema[]> {
+    if (!this.client) throw new Error("Client not initialized");
     return this.client.collections().retrieve();
   }
 
   getCollectionSchema(collectionName: string): Promise<CollectionSchema> {
+    if (!this.client) throw new Error("Client not initialized");
     return this.client.collections(collectionName).retrieve();
   }
 
   getCurations(collectionName: string): Promise<OverridesRetrieveSchema> {
+    if (!this.client) throw new Error("Client not initialized");
     return this.client.collections(collectionName).overrides().retrieve();
   }
 }

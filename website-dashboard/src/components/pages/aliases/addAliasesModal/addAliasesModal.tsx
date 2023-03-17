@@ -8,6 +8,7 @@ import { openAliasesModal } from "../../../../redux/slices/modalSlice/modalSlice
 import useFetchCollections from "../../collections/hooks/useCollections";
 import { useAppDispatch, useAppSelector } from "../../../../redux/store/store";
 import { createAlias } from "../../../../redux/slices/typesenseSlice/asyncThunks";
+import { addAlias } from "../../../../redux/slices/tempStoreFetchedData/storeFetchedDataSlice";
 
 function AddAliasesModal() {
   const dispatch = useAppDispatch();
@@ -20,14 +21,13 @@ function AddAliasesModal() {
   const { apiKey, host, path, port, protocol } = useAppSelector(
     (state) => state.login
   );
+  const { collections } = useFetchCollections();
 
   const closeModal = () => {
     dispatch(openAliasesModal());
   };
 
-  const { collections } = useFetchCollections();
-
-  const addAlias = async () => {
+  const aliasCreate = async () => {
     if (!aliasDescription) {
       setAliasDescriptionRequired(true);
       return;
@@ -44,6 +44,11 @@ function AddAliasesModal() {
     };
     await dispatch(createAlias(createAliasObj)).unwrap();
     dispatch(openAliasesModal());
+    const alias = {
+      collection_name: collectionTarget,
+      name: aliasDescription,
+    };
+    dispatch(addAlias({ alias }));
   };
 
   return (
@@ -103,12 +108,13 @@ function AddAliasesModal() {
           name="collection"
           id="collection"
           className="outline-none rounded-md border-2 p-1 w-36 mb-4 font-lato text-gray-500 dark:bg-[#010409] dark:border-gray-600"
+          defaultValue="default"
           onChange={(e) => {
             setCollectionTargetRequired(false);
             setCollectionTarget(e.target.value);
           }}
         >
-          <option disabled selected>
+          <option disabled value="default">
             {" "}
             - select an option -{" "}
           </option>
@@ -122,7 +128,7 @@ function AddAliasesModal() {
         </select>
         <div className="flex justify-between my-3">
           <div />
-          <Button text="Add Alias" Icon={Add} onClick={addAlias} />
+          <Button text="Add Alias" Icon={Add} onClick={aliasCreate} />
         </div>
       </div>
     </ModalBackground>

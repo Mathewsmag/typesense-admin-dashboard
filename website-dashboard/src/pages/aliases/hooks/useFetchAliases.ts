@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { CollectionAliasSchema } from "typesense/lib/Typesense/Aliases";
 import TypesenseActions, {
   ITypesenseAuthData,
 } from "../../../utils/typesenseActions";
-import { useAppSelector } from "../../../redux/store/store";
+import { useAppDispatch, useAppSelector } from "../../../redux/store/store";
+import { setFetchedAliases } from "../../../redux/slices/tempStoreFetchedData/storeFetchedDataSlice";
 
 const fetchAliases = async (authData: ITypesenseAuthData) => {
   const typesense = new TypesenseActions(authData);
@@ -12,18 +12,19 @@ const fetchAliases = async (authData: ITypesenseAuthData) => {
 };
 
 const useFetchAliases = () => {
-  const [aliases, setAliases] = useState<CollectionAliasSchema[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState();
+  const dispatch = useAppDispatch();
   const { apiKey, host, path, port, protocol } = useAppSelector(
     (state) => state.login
   );
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState();
 
   useEffect(() => {
     setLoading(true);
     fetchAliases({ apiKey, host, path, port, protocol })
       .then((response) => {
-        setAliases(response.aliases);
+        dispatch(setFetchedAliases(response.aliases));
       })
       .catch((err) => {
         setError(err);
@@ -31,9 +32,9 @@ const useFetchAliases = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [apiKey, host, path, port, protocol]);
+  }, [apiKey, host, path, port, protocol, dispatch]);
 
-  return { aliases, loading, error };
+  return { loading, error };
 };
 
 export default useFetchAliases;

@@ -7,6 +7,8 @@ interface IInitialState {
   collectionDeleteError: boolean;
   apiKeyDeletedSuccessfully: boolean;
   apiKeyDeleteError: boolean;
+  curationsDeletedSuccessfully: boolean;
+  curationsDeleteError: boolean;
 }
 
 const initialState: IInitialState = {
@@ -14,6 +16,8 @@ const initialState: IInitialState = {
   collectionDeleteError: false,
   apiKeyDeletedSuccessfully: false,
   apiKeyDeleteError: false,
+  curationsDeletedSuccessfully: false,
+  curationsDeleteError: false,
 };
 
 const deletionsSlice = createSlice({
@@ -27,6 +31,10 @@ const deletionsSlice = createSlice({
     restoreAPIKeyDeletedOrError(state) {
       state.apiKeyDeletedSuccessfully = false;
       state.apiKeyDeleteError = false;
+    },
+    restoreCurationDeletedOrError(state) {
+      state.curationsDeletedSuccessfully = false;
+      state.curationsDeleteError = false;
     },
   },
   extraReducers: (builder) => {
@@ -42,9 +50,18 @@ const deletionsSlice = createSlice({
     builder.addCase(Thunks.deleteAPIKey.rejected, (state) => {
       state.apiKeyDeleteError = true;
     });
+    builder.addCase(Thunks.deleteCuration.fulfilled, (state) => {
+      state.curationsDeletedSuccessfully = true;
+    });
+    builder.addCase(Thunks.deleteCuration.rejected, (state) => {
+      state.curationsDeleteError = true;
+    });
   },
 });
 
 export default deletionsSlice.reducer;
-export const { restoreCollectionDeletedOrError, restoreAPIKeyDeletedOrError } =
-  deletionsSlice.actions;
+export const {
+  restoreCollectionDeletedOrError,
+  restoreAPIKeyDeletedOrError,
+  restoreCurationDeletedOrError,
+} = deletionsSlice.actions;

@@ -10,10 +10,13 @@ import useFetchAliases from "./hooks/useFetchAliases";
 import ErrorScreen from "../../components/shared/error/errorScreen";
 import NoRecords from "../../components/shared/noRecords/noRecords";
 import ListLoader from "../../components/shared/listLoader/listLoader";
+import { useAppSelector } from "../../redux/store/store";
 
 function Aliases() {
   const dispatch = useDispatch();
-  const { aliases, error, loading } = useFetchAliases();
+  const { error, loading } = useFetchAliases();
+
+  const { aliases } = useAppSelector((state) => state.tempFetchedDataStore);
 
   const onClick = () => {
     dispatch(openAliasesModal());

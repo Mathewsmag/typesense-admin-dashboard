@@ -10,7 +10,10 @@ import {
   KeySchema,
 } from "typesense/lib/Typesense/Key";
 import { KeysRetrieveSchema } from "typesense/lib/Typesense/Keys";
-import { OverrideSchema } from "typesense/lib/Typesense/Override";
+import {
+  OverrideDeleteSchema,
+  OverrideSchema,
+} from "typesense/lib/Typesense/Override";
 import {
   OverrideCreateSchema,
   OverridesRetrieveSchema,
@@ -45,6 +48,13 @@ interface ITypesenseActions {
   ): Promise<CollectionAliasSchema>;
 
   deleteAPIKey(keyId: number): Promise<KeyDeleteSchema>;
+
+  deleteAlias(aliasName: string): Promise<CollectionAliasSchema>;
+
+  deleteCuration(
+    collectionName: string,
+    curationName: string
+  ): Promise<OverrideDeleteSchema>;
 }
 
 export default ITypesenseActions;

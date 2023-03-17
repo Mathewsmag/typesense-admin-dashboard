@@ -40,3 +40,40 @@ export const deleteAPIKey = createAsyncThunk(
     }
   }
 );
+interface IDeleteAlias {
+  typesenseAuthData: ITypesenseAuthData;
+  aliasName: string;
+}
+export const deleteAlias = createAsyncThunk(
+  "typesense/deleteAPIKey",
+  async (aliasDelete: IDeleteAlias) => {
+    const typesenseAPI = new TypesenseActions(aliasDelete.typesenseAuthData); // Handle this more gracefully
+    try {
+      const response = await typesenseAPI.deleteAlias(aliasDelete.aliasName);
+      return response;
+    } catch (error) {
+      throw new Error("Could not delete the Alias");
+    }
+  }
+);
+
+interface IDeleteCuration {
+  typesenseAuthData: ITypesenseAuthData;
+  collectionName: string;
+  curationName: string;
+}
+export const deleteCuration = createAsyncThunk(
+  "typesense/deleteCuration",
+  async (curationDelete: IDeleteCuration) => {
+    const typesenseAPI = new TypesenseActions(curationDelete.typesenseAuthData); // Handle this more gracefully
+    try {
+      const response = await typesenseAPI.deleteCuration(
+        curationDelete.collectionName,
+        curationDelete.curationName
+      );
+      return response;
+    } catch (error) {
+      throw new Error("Could not delete the curation");
+    }
+  }
+);

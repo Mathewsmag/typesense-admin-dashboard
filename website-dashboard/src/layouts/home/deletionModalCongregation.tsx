@@ -2,6 +2,7 @@ import SuccessOrFailureModal from "../../components/shared/successOrFailureModal
 import {
   restoreCollectionDeletedOrError,
   restoreAPIKeyDeletedOrError,
+  restoreCurationDeletedOrError,
 } from "../../redux/slices/deletions/deletionsSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 
@@ -12,6 +13,8 @@ function DeletionModalCongregation() {
     collectionDeletedSuccessfully,
     apiKeyDeletedSuccessfully,
     apiKeyDeleteError,
+    curationsDeletedSuccessfully,
+    curationsDeleteError,
   } = useAppSelector((state) => state.deletions);
 
   return (
@@ -48,6 +51,24 @@ function DeletionModalCongregation() {
           isError
           onClick={() => {
             dispatch(restoreAPIKeyDeletedOrError());
+          }}
+        />
+      )}
+      {/* curations deletion */}
+      {curationsDeletedSuccessfully && (
+        <SuccessOrFailureModal
+          content="The curation was deleted successfully"
+          onClick={() => {
+            dispatch(restoreCurationDeletedOrError());
+          }}
+        />
+      )}
+      {curationsDeleteError && (
+        <SuccessOrFailureModal
+          content="There was an error deleting the curation"
+          isError
+          onClick={() => {
+            dispatch(restoreCurationDeletedOrError());
           }}
         />
       )}

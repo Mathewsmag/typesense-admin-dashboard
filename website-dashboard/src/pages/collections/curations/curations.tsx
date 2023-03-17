@@ -12,6 +12,7 @@ import useFetchCurations from "./hooks/useFetchCurations";
 import NoRecords from "../../../components/shared/noRecords/noRecords";
 import ErrorScreen from "../../../components/shared/error/errorScreen";
 import ListLoader from "../../../components/shared/listLoader/listLoader";
+import { useAppSelector } from "../../../redux/store/store";
 
 function Curations() {
   const dispatch = useDispatch();
@@ -19,7 +20,8 @@ function Curations() {
   const onClick = () => {
     dispatch(openCurationsModal());
   };
-  const { curations, loading, error } = useFetchCurations(collectionName || "");
+  const { loading, error } = useFetchCurations(collectionName || "");
+  const { curations } = useAppSelector((state) => state.tempFetchedDataStore);
 
   const getQuery = (
     query: OverrideRuleQuerySchema,
@@ -55,6 +57,7 @@ function Curations() {
         )}
         curationIncudes={override.includes?.length || 0}
         curationExcludes={override.excludes?.length || 0}
+        curationName={override.id}
       />
     );
   });

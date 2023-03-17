@@ -7,6 +7,7 @@ import searchAPIKeyActionsSlice from "../slices/searchAPIKeyActions/serachAPIKey
 import loginSlice from "../slices/loginSlice/loginSlice";
 import themeSlice from "../slices/theme/themeSlice";
 import deletions from "../slices/deletions/deletionsSlice";
+import storeFetchedDataSlice from "../slices/tempStoreFetchedData/storeFetchedDataSlice";
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     login: loginSlice,
     theme: themeSlice,
     deletions,
+    tempFetchedDataStore: storeFetchedDataSlice,
   },
 });
 

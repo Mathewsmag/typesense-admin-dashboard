@@ -1,29 +1,23 @@
 import { useEffect, useState } from "react";
-import { OverrideSchema } from "typesense/lib/Typesense/Override";
-import { useAppSelector } from "../../../../redux/store/store";
+import { setFetchedCuration } from "../../../../redux/slices/tempStoreFetchedData/storeFetchedDataSlice";
+import { useAppDispatch, useAppSelector } from "../../../../redux/store/store";
 import TypesenseActions, {
   ITypesenseAuthData,
 } from "../../../../utils/typesenseActions";
 
 const fetchCurations = async (
   collectionName: string,
-  { apiKey, host, path, port, protocol }: ITypesenseAuthData
+  authData: ITypesenseAuthData
 ) => {
-  const typesense = new TypesenseActions({
-    apiKey,
-    host,
-    path,
-    port,
-    protocol,
-  });
+  const typesense = new TypesenseActions(authData);
   const curations = await typesense.getCurations(collectionName);
   return curations;
 };
 
 const useFetchCurations = (collectionName: string) => {
-  const [curations, setCurations] = useState<OverrideSchema[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
+  const dispatch = useAppDispatch();
   const { apiKey, host, path, port, protocol } = useAppSelector(
     (state) => state.login
   );
@@ -32,7 +26,7 @@ const useFetchCurations = (collectionName: string) => {
     setLoading(true);
     fetchCurations(collectionName, { apiKey, host, path, port, protocol })
       .then((response) => {
-        setCurations(response.overrides);
+        dispatch(setFetchedCuration(response.overrides));
       })
       .catch((err) => {
         setError(err);
@@ -40,9 +34,9 @@ const useFetchCurations = (collectionName: string) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [collectionName, apiKey, host, path, port, protocol]);
+  }, [collectionName, apiKey, host, path, port, protocol, dispatch]);
 
-  return { curations, loading, error };
+  return { loading, error };
 };
 
 export default useFetchCurations;
