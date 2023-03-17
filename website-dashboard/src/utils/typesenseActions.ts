@@ -39,7 +39,6 @@ export default class TypesenseActions implements ITypesenseActions {
     if (instance) {
       return instance;
     }
-    instance = this;
 
     this.client = new Typesense.Client({
       nodes: [
@@ -52,6 +51,7 @@ export default class TypesenseActions implements ITypesenseActions {
       apiKey: AuthData.apiKey,
       connectionTimeoutSeconds: 2,
     });
+    instance = this;
   }
 
   deleteCuration(
